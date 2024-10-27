@@ -780,6 +780,15 @@ add_library (seastar
   src/websocket/server.cc
   )
 
+# Shared library soname  
+set_target_properties(seastar PROPERTIES
+  VERSION ${Seastar_API_LEVEL}
+  SOVERSION ${Seastar_API_LEVEL})
+
+# We disable _FORTIFY_SOURCE because it generates false positives with longjmp() (src/core/thread.cc)
+set_source_files_properties(src/core/thread.cc
+  PROPERTIES COMPILE_FLAGS -U_FORTIFY_SOURCE)
+
 add_library (Seastar::seastar ALIAS seastar)
 
 add_dependencies (seastar
@@ -1170,6 +1179,10 @@ if (Seastar_INSTALL OR Seastar_TESTING)
     src/testing/seastar_test.cc
     src/testing/test_runner.cc)
 
+  set_target_properties(seastar_testing PROPERTIES
+    VERSION ${Seastar_API_LEVEL}
+    SOVERSION ${Seastar_API_LEVEL})
+
   add_library (Seastar::seastar_testing ALIAS seastar_testing)
 
   target_compile_definitions (seastar_testing
@@ -1189,6 +1202,9 @@ if (Seastar_INSTALL OR Seastar_TESTING)
     include/seastar/testing/perf_tests.hh
     tests/perf/perf_tests.cc
     tests/perf/linux_perf_event.cc)
+  set_target_properties(seastar_perf_testing PROPERTIES
+    VERSION ${Seastar_API_LEVEL}
+    SOVERSION ${Seastar_API_LEVEL})
   add_library (Seastar::seastar_perf_testing ALIAS seastar_perf_testing)
   target_compile_definitions (seastar_perf_testing
     PRIVATE ${Seastar_PRIVATE_COMPILE_DEFINITIONS})
